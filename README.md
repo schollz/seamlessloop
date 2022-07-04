@@ -36,7 +36,7 @@ wrote 'quantized/120/pad_bpm120_beats64.wav'
 ```
 
 
-## important! you must have properly named audio files
+## important! you must have "bpmX" in name of audio files
 
 all the files are assumed to have `bpmX` in their filename! this is very improtant, as this program *does not guess the BPM*. for example, this program will not work on a file named `sample.wav` but *will work* if the filename is `sample_bpm120.wav` or `bpm138_blahblah.wav`, etc. the `bpmX` has to be in the filename for this program to work.
 
