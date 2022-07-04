@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	log "github.com/schollz/logger"
-	"github.com/schollz/seamlessloop/src/sox"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +21,5 @@ func TestAudio(t *testing.T) {
 		af, err = af.Process()
 		b, _ = json.MarshalIndent(af, "", " ")
 		fmt.Println(string(b))
-		break
 	}
-	sox.Clean()
 }
