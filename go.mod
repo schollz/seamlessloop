@@ -15,8 +15,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838 // indirect
-	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
+	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
+	golang.org/x/sys v0.0.0-20220702020025-31831981b65f // indirect
+	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

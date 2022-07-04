@@ -145,6 +145,55 @@ func Length(fname string) (length float64, err error) {
 	return
 }
 
+// Samples returns the number of samples in a file
+func Samples(fname string) (samples int64, err error) {
+	_, channels, err := Info(fname)
+	if err != nil {
+		return
+	}
+	stdout, stderr, err := run("sox", fname, "-n", "stat")
+	if err != nil {
+		return
+	}
+	stdout += stderr
+	for _, line := range strings.Split(stdout, "\n") {
+		if strings.Contains(line, "Samples read") {
+			parts := strings.Fields(line)
+			samples, err = strconv.ParseInt(parts[len(parts)-1], 10, 64)
+			samples = samples / int64(channels)
+			return
+		}
+	}
+	return
+}
+
+// SilenceAppendSamples appends silence to a file
+func SilenceAppendSamples(fname string, samples int64) (fname2 string, err error) {
+	samplerate, channels, err := Info(fname)
+	if err != nil {
+		return
+	}
+	silencefile := Tmpfile()
+	defer os.Remove(silencefile)
+	fname2 = Tmpfile()
+	// generate silence
+	_, _, err = run("sox", "-n", "-r", fmt.Sprint(samplerate), "-c", fmt.Sprint(channels), silencefile, "trim", "0s", fmt.Sprint(samples)+"s")
+	if err != nil {
+		return
+	}
+	// combine with original file
+	_, _, err = run("sox", fname, silencefile, fname2)
+	if err != nil {
+		return
+	}
+	if GarbageCollection {
+		go func() {
+			os.Remove(fname)
+		}()
+	}
+	return
+}
+
 // SilenceAppend appends silence to a file
 func SilenceAppend(fname string, length float64) (fname2 string, err error) {
 	samplerate, channels, err := Info(fname)
@@ -203,6 +252,15 @@ func Fade(fname string, fadeIn float64, fadeOut float64) (fname2 string, err err
 	return
 }
 
+func FadeSamples(fname string, fadeIn int64, fadeOut int64) (fname2 string, err error) {
+	fname2 = Tmpfile()
+	_, _, err = run("sox", fname, fname2, "fade", "h", fmt.Sprintf("%ds", fadeIn), "-0", fmt.Sprintf("%ds", fadeOut))
+	if err != nil {
+		return
+	}
+	return
+}
+
 func LoopCrossfade(fname string, fadetime float64) (fname2 string, err error) {
 	totaltime, err := Length(fname)
 	if err != nil {
@@ -219,6 +277,30 @@ func LoopCrossfade(fname string, fadetime float64) (fname2 string, err error) {
 	}
 
 	fadePart, err := Trim(fname2, totaltime-fadetime)
+	if err != nil {
+		return
+	}
+
+	return Mix(mainPart, fadePart)
+}
+
+func LoopCrossfadeSamples(fname string, fadesamples int64) (fname2 string, err error) {
+	totalsamples, err := Samples(fname)
+	if err != nil {
+		return
+	}
+
+	fname2, err = FadeSamples(fname, fadesamples, fadesamples)
+	if err != nil {
+		return
+	}
+
+	mainPart, err := TrimSamples(fname2, 0, totalsamples-fadesamples)
+	if err != nil {
+		return
+	}
+
+	fadePart, err := TrimSamples(fname2, totalsamples-fadesamples, fadesamples)
 	if err != nil {
 		return
 	}
@@ -267,6 +349,17 @@ func Trim(fname string, start float64, length ...float64) (fname2 string, err er
 		_, _, err = run("sox", fname, fname2, "trim", fmt.Sprint(start), fmt.Sprint(length[0]))
 	} else {
 		_, _, err = run("sox", fname, fname2, "trim", fmt.Sprint(start))
+	}
+	return
+}
+
+// TrimSamples will trim the audio from the start point (with optional length)
+func TrimSamples(fname string, start int64, length ...int64) (fname2 string, err error) {
+	fname2 = Tmpfile()
+	if len(length) > 0 {
+		_, _, err = run("sox", fname, fname2, "trim", fmt.Sprint(start)+"s", fmt.Sprint(length[0])+"s")
+	} else {
+		_, _, err = run("sox", fname, fname2, "trim", fmt.Sprint(start)+"s")
 	}
 	return
 }
