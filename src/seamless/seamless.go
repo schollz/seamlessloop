@@ -24,7 +24,7 @@ type AudioFile struct {
 	Beats      float64
 }
 
-func Do(filename string) (fname2 string, bpm int, err error) {
+func Do(filename string) (fname2 string, bpm int, beats int, err error) {
 	af, err := Load(filename)
 	if err != nil {
 		return
@@ -35,6 +35,7 @@ func Do(filename string) (fname2 string, bpm int, err error) {
 	}
 	fname2 = af.Filename
 	bpm = int(af.BPM)
+	beats = int(af.Beats)
 	return
 }
 

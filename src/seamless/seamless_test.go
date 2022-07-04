@@ -14,7 +14,7 @@ func TestAudio(t *testing.T) {
 	var b []byte
 	var err error
 	var af *AudioFile
-	for _, fname := range []string{"chords_bpm120.wav", "loop1_bpm174.wav", "amenbreak_bpm136.wav", "016_Pad_Strings__With_FX_Trail__A_Minor_120bpm_-_ORGANICHOUSE_Zenhiser_keyAmin_bpm120.wav"} {
+	for _, fname := range []string{"loop1_bpm174.wav", "amenbreak_bpm136.wav", "pad_bpm120.wav"} {
 		fmt.Println(fname)
 		af, err = Load(fname)
 		assert.Nil(t, err)

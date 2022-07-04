@@ -82,12 +82,14 @@ func run() (err error) {
 }
 
 func loopit(fname string) (err error) {
-	fname2, bpm, err := seamless.Do(fname)
+	fname2, bpm, beats, err := seamless.Do(fname)
 	if err != nil {
 		return
 	}
 
 	_, filename2 := path.Split(filepath.ToSlash(fname))
+	filename2 = strings.TrimSuffix(filename2, path.Ext(filename2))
+	filename2 = filename2 + fmt.Sprintf("_beats%d.wav", beats)
 	outFolder := path.Join(flagOutput, fmt.Sprint(bpm))
 	outFolder = filepath.ToSlash(outFolder)
 	outFile := path.Join(outFolder, filename2)
@@ -169,7 +171,7 @@ func runSpecial() (err error) {
 }
 
 func makeLoop(filename string) (err error) {
-	fname2, bpm, err := seamless.Do(filename)
+	fname2, bpm, _, err := seamless.Do(filename)
 	if err != nil {
 		return
 	}
