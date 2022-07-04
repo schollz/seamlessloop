@@ -1,8 +1,8 @@
 # seamlessloop
 
-this project can take a piece of audio with a bpm (in the filename) and convert it to a *seamless loop* quantized to the nearest 4/8/16-multiple beat. "*seamless*" means that all clicks/pops from discontinuities will be present which can occur if you concatenate audio instead of crossfading.
+this project can take a piece of audio with a bpm (in the filename) and convert it to a *seamless loop* quantized to the nearest 4/8/16-multiple beat. "*seamless*" means that zero clicks/pops from discontinuities should occur with this transformation.
 
-it works by first figuring out the closest 4/8/16-multiple beat and then implementing a crossfade. for example, if you have a 35-beat piece of audio it will crop it to 32 beats. the continuous piece of audio is made by taking the X+1 beat (in example, the 33rd beat) and fading it out, and then mixing it into the beginning which has been faded in.
+quantized seamless loops are made by first figuring out the closest 4/8/16-multiple beat and then implementing a crossfade between the extra end with the beginning. for example, if you have a 35-beat piece of audio it will crop it to 32 beats. the continuous piece of audio is made by taking the X+1 beat (in example, the 33rd beat) and fading it out, and then mixing it into the beginning which has been faded in.
 
 the process is shown here using audacity:
 
