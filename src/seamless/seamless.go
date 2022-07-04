@@ -5,6 +5,7 @@ import (
 	"math"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -42,12 +43,13 @@ func Load(filename string, bpm ...float64) (af *AudioFile, err error) {
 	defer s.Clean()
 
 	af = new(AudioFile)
-	af.Filename = filename
+	af.Filename = filepath.ToSlash(filename)
 
 	// get bpm
 	r, _ := regexp.Compile(`bpm(\d+)`)
 	af.BPM, err = strconv.ParseFloat(strings.TrimPrefix(r.FindString(filename), "bpm"), 64)
 	if err != nil {
+		err = fmt.Errorf("could not find BPM (it needs to be in the filename e.g. file_bpm120.wav)")
 		return
 	}
 	if len(bpm) > 0 {

@@ -3,10 +3,12 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -15,16 +17,97 @@ import (
 	"github.com/schollz/seamlessloop/src/seamless"
 )
 
-func main() {
-	log.SetLevel("info")
+var flagDebug bool
+var flagInput, flagOutput string
 
+func init() {
+	flag.BoolVar(&flagDebug, "debug", false, "debug mode")
+	flag.StringVar(&flagInput, "in", "", "debug mode")
+	flag.StringVar(&flagOutput, "out", "", "debug mode")
+}
+
+func main() {
+	flag.Parse()
+	if flagDebug {
+		log.SetLevel("debug")
+	} else {
+		log.SetLevel("info")
+	}
+
+	if flagInput == "" {
+		fmt.Println("need to specify input folder with --in")
+		return
+	}
+	if flagOutput == "" {
+		fmt.Println("need to specify output folder with --out")
+		return
+	}
 	err := run()
 	if err != nil {
 		log.Error(err)
 	}
+
+	// err := runSpecial()
+	// if err != nil {
+	// 	log.Error(err)
+	// }
 }
 
 func run() (err error) {
+	var files = []string{}
+
+	err = filepath.Walk(flagInput,
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			path, _ = filepath.Abs(path)
+			if !info.IsDir() && filepath.Ext(path) == ".wav" {
+				files = append(files, path)
+			}
+			return nil
+		})
+	if err != nil {
+		return
+	}
+
+	log.Debug(files)
+	for _, fname := range files {
+		if err = loopit(fname); err != nil {
+			log.Errorf("could not loop %s", fname)
+			return
+		}
+	}
+	return
+}
+
+func loopit(fname string) (err error) {
+	fname2, bpm, err := seamless.Do(fname)
+	if err != nil {
+		return
+	}
+
+	_, filename2 := path.Split(filepath.ToSlash(fname))
+	outFolder := path.Join(flagOutput, fmt.Sprint(bpm))
+	outFolder = filepath.ToSlash(outFolder)
+	outFile := path.Join(outFolder, filename2)
+	err = os.MkdirAll(outFolder, os.ModePerm)
+	if err != nil {
+		return
+	}
+	_, err = copy(fname2, outFile)
+	if err != nil {
+		return
+	}
+	err = os.Remove(fname2)
+	if err != nil {
+		return
+	}
+	fmt.Printf("wrote '%s'\n", outFile)
+	return
+}
+
+func runSpecial() (err error) {
 	lineFile := "/media/zns/backup4tb/splice2/all_files.txt"
 	numLines, err := NumLines(lineFile)
 	bar := progressbar.Default(int64(numLines))
