@@ -22,16 +22,22 @@ type AudioFile struct {
 	Samples    int64
 	BPM        float64
 	Beats      float64
+	Quantize   bool 
+	Crossfade  float64
 }
 
-func Do(filename string) (fname2 string, bpm int, beats int, err error) {
+func Do(filename string, quantize bool, crossfade float64) (fname2 string, bpm int, beats int, err error) {
 	af, err := Load(filename)
 	if err != nil {
 		return
 	}
-	af, err = af.Process()
-	if err != nil {
-		return
+	if af.BPM>0 && quantize {
+		af, err = af.Process()
+		if err != nil {
+			return
+		}	
+	} else {
+	
 	}
 	fname2 = af.Filename
 	bpm = int(af.BPM)
@@ -46,19 +52,11 @@ func Load(filename string, bpm ...float64) (af *AudioFile, err error) {
 	af = new(AudioFile)
 	af.Filename = filepath.ToSlash(filename)
 
-	// get bpm
+	// try to get bpm
 	r, _ := regexp.Compile(`bpm(\d+)`)
-	af.BPM, err = strconv.ParseFloat(strings.TrimPrefix(r.FindString(filename), "bpm"), 64)
-	if err != nil {
-		err = fmt.Errorf("could not find BPM (it needs to be in the filename e.g. file_bpm120.wav)")
-		return
-	}
+	af.BPM, _ = strconv.ParseFloat(strings.TrimPrefix(r.FindString(filename), "bpm"), 64)
 	if len(bpm) > 0 {
 		af.BPM = bpm[0]
-	}
-	if af.BPM == 0 {
-		err = fmt.Errorf("could not find BPM")
-		return
 	}
 
 	// get duration

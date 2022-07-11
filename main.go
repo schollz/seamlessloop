@@ -19,8 +19,12 @@ import (
 
 var flagDebug bool
 var flagInput, flagOutput string
+var flagCrossfade float64 
+var flagQuantize bool 
 
 func init() {
+	flag.BoolVar(&flagQuantize,"quantize",true,"quantize (if has bpm in name)")
+	flag.BoolVar(&flagCrossfade,"crossfade",1.0,"seconds to crossfade if not quantizing")
 	flag.BoolVar(&flagDebug, "debug", false, "debug mode")
 	flag.StringVar(&flagInput, "in", "", "debug mode")
 	flag.StringVar(&flagOutput, "out", "", "debug mode")
@@ -82,7 +86,7 @@ func run() (err error) {
 }
 
 func loopit(fname string) (err error) {
-	fname2, bpm, beats, err := seamless.Do(fname)
+	fname2, bpm, beats, err := seamless.Do(fname,flagQuantize,flagCrossfade)
 	if err != nil {
 		return
 	}
@@ -171,7 +175,7 @@ func runSpecial() (err error) {
 }
 
 func makeLoop(filename string) (err error) {
-	fname2, bpm, _, err := seamless.Do(filename)
+	fname2, bpm, _, err := seamless.Do(filename,flagQuantize,flagCrossfade)
 	if err != nil {
 		return
 	}
