@@ -22,8 +22,6 @@ type AudioFile struct {
 	Samples    int64
 	BPM        float64
 	Beats      float64
-	Quantize   bool 
-	Crossfade  float64
 }
 
 func Do(filename string, quantize bool, crossfade float64) (fname2 string, bpm int, beats int, err error) {
@@ -37,7 +35,10 @@ func Do(filename string, quantize bool, crossfade float64) (fname2 string, bpm i
 			return
 		}	
 	} else {
-	
+		af,err = af.ProcessCrossfade(crossfade)
+		if err != nil {
+			return
+		}
 	}
 	fname2 = af.Filename
 	bpm = int(af.BPM)
@@ -154,6 +155,31 @@ func (af *AudioFile) Process() (af2 *AudioFile, err error) {
 	if err != nil {
 		return
 	}
+	af2, err = Load(fnameFinal, af.BPM)
+	log.Debugf("after: %+v\n", af2)
+
+	return
+}
+
+func (af *AudioFile) ProcessCrossfade(crossfade float64) (af2 *AudioFile, err error) {
+	s := sox.New()
+	defer s.Clean()
+
+	_, fname := path.Split(af.Filename)
+	newfilename := path.Join(os.TempDir(), fname+"_processed.wav")
+	defer os.Remove(newfilename)
+
+	fnameFinal := path.Join(os.TempDir(), fmt.Sprintf("%s_.flac", strings.TrimSuffix(fname, ".wav")))
+	crossfaded, err = s.LoopCrossfadeSamples(af.Filename, af.Samples-int(crossfade*af.SampleRate))
+	if err != nil {
+		return
+	}
+
+	err = s.Copy(crossfaded, fnameFinal)
+	if err != nil {
+		return
+	}
+
 	af2, err = Load(fnameFinal, af.BPM)
 	log.Debugf("after: %+v\n", af2)
 

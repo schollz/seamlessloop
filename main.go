@@ -93,8 +93,13 @@ func loopit(fname string) (err error) {
 
 	_, filename2 := path.Split(filepath.ToSlash(fname))
 	filename2 = strings.TrimSuffix(filename2, path.Ext(filename2))
-	filename2 = filename2 + fmt.Sprintf("_beats%d.wav", beats)
-	outFolder := path.Join(flagOutput, fmt.Sprint(bpm))
+	if beats>0{
+		filename2 = filename2 + fmt.Sprintf("_beats%d.wav", beats)
+	}
+	outFolder =flatOutput 
+	if bpm>0 {
+		outFolder=path.Join(outFolder, fmt.Sprint(bpm))
+	}
 	outFolder = filepath.ToSlash(outFolder)
 	outFile := path.Join(outFolder, filename2)
 	err = os.MkdirAll(outFolder, os.ModePerm)
