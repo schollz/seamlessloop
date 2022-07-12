@@ -19,12 +19,12 @@ import (
 
 var flagDebug bool
 var flagInput, flagOutput string
-var flagCrossfade float64 
-var flagQuantize bool 
+var flagCrossfade float64
+var flagNoQuantize bool
 
 func init() {
-	flag.BoolVar(&flagQuantize,"quantize",true,"quantize (if has bpm in name)")
-	flag.BoolVar(&flagCrossfade,"crossfade",1.0,"seconds to crossfade if not quantizing")
+	flag.BoolVar(&flagNoQuantize, "no-quantize", false, "skip quantization (default if 'bpmX' is in filename)")
+	flag.Float64Var(&flagCrossfade, "crossfade", 1.0, "seconds to crossfade if not quantizing")
 	flag.BoolVar(&flagDebug, "debug", false, "debug mode")
 	flag.StringVar(&flagInput, "in", "", "debug mode")
 	flag.StringVar(&flagOutput, "out", "", "debug mode")
@@ -86,19 +86,20 @@ func run() (err error) {
 }
 
 func loopit(fname string) (err error) {
-	fname2, bpm, beats, err := seamless.Do(fname,flagQuantize,flagCrossfade)
+	fname2, bpm, beats, err := seamless.Do(fname, !flagNoQuantize, flagCrossfade)
 	if err != nil {
 		return
 	}
 
 	_, filename2 := path.Split(filepath.ToSlash(fname))
 	filename2 = strings.TrimSuffix(filename2, path.Ext(filename2))
-	if beats>0{
-		filename2 = filename2 + fmt.Sprintf("_beats%d.wav", beats)
+	if beats > 0 {
+		filename2 = filename2 + fmt.Sprintf("_beats%d", beats)
 	}
-	outFolder =flatOutput 
-	if bpm>0 {
-		outFolder=path.Join(outFolder, fmt.Sprint(bpm))
+	filename2 += ".wav"
+	outFolder := flagOutput
+	if bpm > 0 {
+		outFolder = path.Join(outFolder, fmt.Sprint(bpm))
 	}
 	outFolder = filepath.ToSlash(outFolder)
 	outFile := path.Join(outFolder, filename2)
@@ -180,7 +181,7 @@ func runSpecial() (err error) {
 }
 
 func makeLoop(filename string) (err error) {
-	fname2, bpm, _, err := seamless.Do(filename,flagQuantize,flagCrossfade)
+	fname2, bpm, _, err := seamless.Do(filename, !flagNoQuantize, flagCrossfade)
 	if err != nil {
 		return
 	}
