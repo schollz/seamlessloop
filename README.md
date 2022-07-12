@@ -1,8 +1,7 @@
 # seamlessloop
 
-this project can take a piece of audio with a known bpm and convert it to a *seamless loop* quantized to the nearest 4/8/16-multiple beat. "*seamless*" means that zero clicks/pops from discontinuities should occur with this transformation.
+this project can take a piece of audio and convert it to a *seamless loop* and can optionally be quantized to the nearest beat. "*seamless*" means that zero clicks/pops from discontinuities should occur with this transformation.
 
-quantized seamless loops are made by first figuring out the closest 4/8/16-multiple beat and then implementing a crossfade between the extra end with the beginning. for example, if you have a 35-beat piece of audio it will crop it to 32 beats. the continuous piece of audio is made by taking the X+1 beat (in example, the 33rd beat) and fading it out, and then mixing it into the beginning which has been faded in.
 
 the process is shown here using audacity:
 
@@ -36,9 +35,13 @@ wrote 'quantized/120/pad_bpm120_beats64.wav'
 ```
 
 
-## important! you must have "bpmX" in name of audio files
+## quantized loops
 
-all the files are assumed to have `bpmX` in their filename! this is very improtant, as this program *does not guess the BPM*. for example, this program will not work on a file named `sample.wav` but *will work* if the filename is `sample_bpm120.wav` or `bpm138_blahblah.wav`, etc. the `bpmX` has to be in the filename for this program to work.
+quantizing only works if you include `bpmX` in the filename of the sample being quantized. for example, this program will not quantize a file named `sample.wav` but *will work* if the filename is `sample_bpm120.wav` or `bpm138_blahblah.wav`, etc. the `bpmX` has to be in the filename for this program to work.
+
+quantized seamless loops are made by first figuring out the closest 4/8/16-multiple beat and then implementing a crossfade between the extra end with the beginning. for example, if you have a 35-beat piece of audio it will crop it to 32 beats. the continuous piece of audio is made by taking the X+1 beat (in example, the 33rd beat) and fading it out, and then mixing it into the beginning which has been faded in.
+
+
 
 
 ## thanks
