@@ -18,7 +18,8 @@ import (
 )
 
 var flagDebug bool
-var flagInput, flagOutput string
+var flagInputFolder, flagOutputFolder string
+var flagInputFile, flagOutputFile string
 var flagCrossfade float64
 var flagNoQuantize bool
 
@@ -26,8 +27,10 @@ func init() {
 	flag.BoolVar(&flagNoQuantize, "no-quantize", false, "skip quantization (default if 'bpmX' is in filename)")
 	flag.Float64Var(&flagCrossfade, "crossfade", 1.0, "seconds to crossfade if not quantizing")
 	flag.BoolVar(&flagDebug, "debug", false, "debug mode")
-	flag.StringVar(&flagInput, "in", "", "debug mode")
-	flag.StringVar(&flagOutput, "out", "", "debug mode")
+	flag.StringVar(&flagInputFile, "in-file", "", "file to input")
+	flag.StringVar(&flagOutputFile, "out-file", "", "file to output")
+	flag.StringVar(&flagInputFolder, "in-folder", "", "folder to input")
+	flag.StringVar(&flagOutputFolder, "out-folder", "", "folder to output")
 }
 
 func main() {
@@ -38,12 +41,12 @@ func main() {
 		log.SetLevel("info")
 	}
 
-	if flagInput == "" {
-		fmt.Println("need to specify input folder with --in")
+	if flagInputFolder == "" && flagInputFile == "" {
+		fmt.Println("need to specify input folder or file")
 		return
 	}
-	if flagOutput == "" {
-		fmt.Println("need to specify output folder with --out")
+	if flagOutputFolder == "" && flagOutputFile == "" {
+		fmt.Println("need to specify output folder or file")
 		return
 	}
 	err := run()
@@ -60,19 +63,23 @@ func main() {
 func run() (err error) {
 	var files = []string{}
 
-	err = filepath.Walk(flagInput,
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			path, _ = filepath.Abs(path)
-			if !info.IsDir() && filepath.Ext(path) == ".wav" {
-				files = append(files, path)
-			}
-			return nil
-		})
-	if err != nil {
-		return
+	if flagInputFolder != "" {
+		err = filepath.Walk(flagInputFolder,
+			func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+				path, _ = filepath.Abs(path)
+				if !info.IsDir() && filepath.Ext(path) == ".wav" {
+					files = append(files, path)
+				}
+				return nil
+			})
+		if err != nil {
+			return
+		}
+	} else {
+		files = []string{flagInputFile}
 	}
 
 	log.Debug(files)
@@ -97,15 +104,20 @@ func loopit(fname string) (err error) {
 		filename2 = filename2 + fmt.Sprintf("_beats%d", beats)
 	}
 	filename2 += ".wav"
-	outFolder := flagOutput
+	outFolder := flagOutputFolder
 	if bpm > 0 {
 		outFolder = path.Join(outFolder, fmt.Sprint(bpm))
 	}
 	outFolder = filepath.ToSlash(outFolder)
 	outFile := path.Join(outFolder, filename2)
-	err = os.MkdirAll(outFolder, os.ModePerm)
-	if err != nil {
-		return
+	if flagOutputFile != "" {
+		outFile = flagOutputFile
+	} else {
+
+		err = os.MkdirAll(outFolder, os.ModePerm)
+		if err != nil {
+			return
+		}
 	}
 	_, err = copy(fname2, outFile)
 	if err != nil {
