@@ -152,6 +152,11 @@ func (af *AudioFile) Process() (af2 *AudioFile, err error) {
 		if err != nil {
 			return
 		}
+		// perform a fade
+		silenceAdded, err = s.Fade(silenceAdded, 0.007, 0.015)
+		if err != nil {
+			return
+		}
 		err = s.Copy(silenceAdded, fnameFinal)
 	}
 	if err != nil {

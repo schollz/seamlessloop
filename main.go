@@ -200,7 +200,7 @@ func makeLoop(filename string) (err error) {
 
 	_, fname2name := path.Split(fname2)
 	f1path, _ := path.Split(filename)
-	f2path := strings.Replace(f1path, "splice2", "spliceloop", 1)
+	f2path := strings.Replace(f1path, "splice2", "spliceloop2", 1)
 	f2path = path.Join(f2path, fmt.Sprint(bpm))
 	finalName := path.Join(f2path, fname2name)
 	err = os.MkdirAll(f2path, os.ModePerm)
