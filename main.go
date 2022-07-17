@@ -22,9 +22,13 @@ var flagInputFolder, flagOutputFolder string
 var flagInputFile, flagOutputFile string
 var flagCrossfade float64
 var flagNoQuantize bool
+var flagVersion bool
+
+var Version string
 
 func init() {
 	flag.BoolVar(&flagNoQuantize, "no-quantize", false, "skip quantization (default if 'bpmX' is in filename)")
+	flag.BoolVar(&flagVersion, "version", false, "show version information")
 	flag.Float64Var(&flagCrossfade, "crossfade", 1.0, "seconds to crossfade if not quantizing")
 	flag.BoolVar(&flagDebug, "debug", false, "debug mode")
 	flag.StringVar(&flagInputFile, "in-file", "", "file to input")
@@ -35,6 +39,10 @@ func init() {
 
 func main() {
 	flag.Parse()
+	if flagVersion {
+		fmt.Println(Version)
+		os.Exit(0)
+	}
 	if flagDebug {
 		log.SetLevel("debug")
 	} else {
