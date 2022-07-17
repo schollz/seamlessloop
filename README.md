@@ -7,7 +7,7 @@ the process is shown here using audacity:
 
 ![seamless loop](https://user-images.githubusercontent.com/6550035/177219531-2efca0a8-07c7-4055-8fd0-b9b66060799a.gif)
 
-in the case that the audio is too short (say 31 beats) then the audio is rounded to 32 beats and just appended with 1 beat of silence.
+in the case that the audio is too short (say 31 beats) then the audio is rounded to 32 beats and just appended with 1 beat of silence and the begining/end are given 5 ms fades to prevent clips.
 
 ## install
 
