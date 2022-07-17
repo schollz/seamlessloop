@@ -31,8 +31,8 @@ func init() {
 	flag.BoolVar(&flagVersion, "version", false, "show version information")
 	flag.Float64Var(&flagCrossfade, "crossfade", 1.0, "seconds to crossfade if not quantizing")
 	flag.BoolVar(&flagDebug, "debug", false, "debug mode")
-	flag.StringVar(&flagInputFile, "in-file", "", "file to input")
-	flag.StringVar(&flagOutputFile, "out-file", "", "file to output")
+	flag.StringVar(&flagInputFile, "in", "", "file to input")
+	flag.StringVar(&flagOutputFile, "out", "", "file to output")
 	flag.StringVar(&flagInputFolder, "in-folder", "", "folder to input")
 	flag.StringVar(&flagOutputFolder, "out-folder", "", "folder to output")
 }
@@ -53,8 +53,8 @@ func main() {
 		fmt.Println("need to specify input folder or file")
 		return
 	}
-	if flagOutputFolder == "" && flagOutputFile == "" {
-		fmt.Println("need to specify output folder or file")
+	if flagInputFolder != "" && flagOutputFolder == "" {
+		fmt.Println("need to specify output folder")
 		return
 	}
 	err := run()
@@ -108,20 +108,20 @@ func loopit(fname string) (err error) {
 
 	_, filename2 := path.Split(filepath.ToSlash(fname))
 	filename2 = strings.TrimSuffix(filename2, path.Ext(filename2))
+	filename2 += "_"
 	if beats > 0 {
 		filename2 = filename2 + fmt.Sprintf("_beats%d", beats)
 	}
 	filename2 += ".wav"
 	outFolder := flagOutputFolder
-	if bpm > 0 {
+	if bpm > 0 && flagInputFolder != "" {
 		outFolder = path.Join(outFolder, fmt.Sprint(bpm))
 	}
 	outFolder = filepath.ToSlash(outFolder)
 	outFile := path.Join(outFolder, filename2)
 	if flagOutputFile != "" {
 		outFile = flagOutputFile
-	} else {
-
+	} else if outFolder != "" {
 		err = os.MkdirAll(outFolder, os.ModePerm)
 		if err != nil {
 			return
