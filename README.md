@@ -11,6 +11,8 @@ in the case that the audio is too short (say 31 beats) then the audio is rounded
 
 ## install
 
+the easiest way to install is to [download the latest release](https://github.com/schollz/seamlessloop/releases/latest).
+
 first install Go, then `go install github.com/schollz/seamlessloop@latest`.
 
 also you need to install Sox: https://sourceforge.net/projects/sox/
@@ -20,7 +22,7 @@ also you need to install Sox: https://sourceforge.net/projects/sox/
 you can specify a folder of files and specify a folder to output the resulting loops.
 
 ```
-./seamlessloop --in INPUTFOLDER --out OUTPUTFOLDER
+seamlessloop -in-folder INPUTFOLDER -out-folder OUTPUTFOLDER
 ```
 
 the `OUTPUTFOLDER` will be created if it does not exist.
@@ -28,7 +30,7 @@ the `OUTPUTFOLDER` will be created if it does not exist.
 for example, you can make seamless quantized loops out of the files in this repo:
 
 ```
-$ ./seamlessloop --in src --out quantized
+$ seamlessloop --in-folder src --out-folder quantized
 wrote 'quantized/136/amenbreak_bpm136_beats8.wav'
 wrote 'quantized/174/loop1_bpm174_beats16.wav'
 wrote 'quantized/120/pad_bpm120_beats64.wav'
