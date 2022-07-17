@@ -1,0 +1,86 @@
+project_name: seamlessloop
+build:
+  main: main.go
+  binary: seamlessloop
+  ldflags: -s -w -X main.Version=v{{.Version}}-{{.Date}}
+  env:
+    - CGO_ENABLED=0
+  goos:
+    - darwin
+    - linux
+    - windows
+    # - freebsd
+    # - netbsd
+    # - openbsd
+    # - dragonfly
+  goarch:
+    - amd64
+    # - 386
+    - arm
+    # - arm64
+  ignore:
+    - goos: darwin
+      goarch: 386
+    - goos: freebsd
+      goarch: arm
+  goarm:
+    - 7
+nfpms:
+  -
+    formats:
+      - deb
+    vendor: "schollz.com"
+    homepage: "https://schollz.com/software/seamlessloop/"
+    maintainer: "Zack Scholl <zack.scholl@gmail.com>"
+    description: "A simple, secure, and fast way to transfer data."
+    license: "MIT"
+    file_name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: RaspberryPi
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
+archives:
+  -
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: RaspberryPi
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
+    files:
+      - README.md
+      - LICENSE
+
+brews:
+  -
+    tap:
+      owner: schollz
+      name: homebrew-tap
+    folder: Formula
+    description: "seamlessloop is a tool to make seamless loops (requires sox)."
+    homepage: "https://schollz.com/software/seamlessloop/"
+    install: |
+      bin.install "seamlessloop"
+
+    test: |
+      system "#{bin}/seamlessloop --version"
+
