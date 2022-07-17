@@ -43,7 +43,7 @@ quantizing only works if you include `bpmX` in the filename of the sample being 
 
 quantized seamless loops are made by first figuring out the closest 4/8/16-multiple beat and then implementing a crossfade between the extra end with the beginning. for example, if you have a 35-beat piece of audio it will crop it to 32 beats. the continuous piece of audio is made by taking the X+1 beat (in example, the 33rd beat) and fading it out, and then mixing it into the beginning which has been faded in.
 
-
+if you are not using quantized loops (no `bpmX` in the filename) then it will use the `-crossfade` setting to determine the crossfade amount (default 1 second).
 
 
 ## thanks
