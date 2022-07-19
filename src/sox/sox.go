@@ -157,6 +157,23 @@ func (s Sox) Length(fname string) (length float64, err error) {
 
 // Tempo returns the estimated tempo using aubio
 func (s Sox) Tempo(fname string) (tempo float64, err error) {
+	// c1 := exec.Command("sox", fname, "-t", "raw", "-r", "44100", "-e", "float", "-c", "1", "-")
+	// c2 := exec.Command("bpm", "-m", "100", "-x", "179")
+
+	// r, w := io.Pipe()
+	// c1.Stdout = w
+	// c2.Stdin = r
+
+	// var b2 bytes.Buffer
+	// c2.Stdout = &b2
+
+	// c1.Start()
+	// c2.Start()
+	// c1.Wait()
+	// w.Close()
+	// c2.Wait()
+	// io.Copy(os.Stdout, &b2)
+	// tempo, err = strconv.ParseFloat(strings.Fields(b2.String())[0], 64)
 	stdout, _, err := run("aubio", "tempo", "-r", "44100", "-i", fname)
 	if err != nil {
 		return

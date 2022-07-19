@@ -45,8 +45,8 @@ func Do(filename string, quantize bool, crossfade float64, bpmForce ...float64) 
 	}
 	fname2 = af.Filename
 	if af.BPM > 0 && quantize {
-		bpm = int(af.BPM)
-		beats = int(af.Beats)
+		bpm = int(math.Round(af.BPM))
+		beats = int(math.Round(af.Beats))
 	}
 	return
 }
