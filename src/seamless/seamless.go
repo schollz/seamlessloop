@@ -24,10 +24,13 @@ type AudioFile struct {
 	Beats      float64
 }
 
-func Do(filename string, quantize bool, crossfade float64) (fname2 string, bpm int, beats int, err error) {
+func Do(filename string, quantize bool, crossfade float64, bpmForce ...float64) (fname2 string, bpm int, beats int, err error) {
 	af, err := Load(filename)
 	if err != nil {
 		return
+	}
+	if len(bpmForce) > 0 {
+		af.BPM = bpmForce[0]
 	}
 	if af.BPM > 0 && quantize {
 		af, err = af.Process()

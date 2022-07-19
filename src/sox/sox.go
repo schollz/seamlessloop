@@ -155,6 +155,16 @@ func (s Sox) Length(fname string) (length float64, err error) {
 	return
 }
 
+// Tempo returns the estimated tempo using aubio
+func (s Sox) Tempo(fname string) (tempo float64, err error) {
+	stdout, _, err := run("aubio", "tempo", "-r", "44100", "-i", fname)
+	if err != nil {
+		return
+	}
+	tempo, err = strconv.ParseFloat(strings.Fields(stdout)[0], 64)
+	return
+}
+
 // Samples returns the number of samples in a file
 func (s Sox) Samples(fname string) (samples int64, err error) {
 	_, channels, err := s.Info(fname)
@@ -174,6 +184,16 @@ func (s Sox) Samples(fname string) (samples int64, err error) {
 			return
 		}
 	}
+	return
+}
+
+// SplitSilence splits s file on silence
+func (s Sox) SplitSilence(fname string, fname2 string, threshold float64, duration float64) (err error) {
+	_, _, err = run("sox", fname, fname2, "silence", "1", fmt.Sprint(duration), fmt.Sprint(threshold)+"%", "1", fmt.Sprint(duration), fmt.Sprint(threshold)+"%", ":", "newfile", ":", "restart")
+	if err != nil {
+		return
+	}
+
 	return
 }
 
