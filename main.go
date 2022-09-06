@@ -106,12 +106,16 @@ func loopit(fname string) (err error) {
 	if err != nil {
 		return
 	}
+	log.Debugf("fname=%s,bpm=%d,beats=%d", fname2, bpm, beats)
 
 	_, filename2 := path.Split(filepath.ToSlash(fname))
 	filename2 = strings.TrimSuffix(filename2, path.Ext(filename2))
 	filename2 += "_"
 	if beats > 0 {
 		filename2 = filename2 + fmt.Sprintf("_beats%d", beats)
+	}
+	if beats > 0 {
+		filename2 = filename2 + fmt.Sprintf("_bpm%d", bpm)
 	}
 	filename2 += ".wav"
 	outFolder := flagOutputFolder
