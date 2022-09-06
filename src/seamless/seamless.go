@@ -24,13 +24,29 @@ type AudioFile struct {
 	Beats      float64
 }
 
-func Do(filename string, quantize bool, crossfade float64, bpmForce ...float64) (fname2 string, bpm int, beats int, err error) {
+func Do(filename string, quantize bool, crossfade float64, guessBPM bool, bpmForce ...float64) (fname2 string, bpm int, beats int, err error) {
 	af, err := Load(filename)
 	if err != nil {
 		return
 	}
 	if len(bpmForce) > 0 {
 		af.BPM = bpmForce[0]
+	}
+	if af.BPM == 0 {
+		closestBPM := 0.0
+		closestResidual := 100000.0
+		for i := 1.0; i < 32.0; i += 1.0 {
+			bpm := (i * 2) / af.Duration * 60.0
+			if bpm > 89 && bpm < 180 {
+				resid := math.Abs(math.Round(bpm)-bpm) + float64((int(i)*2)%8)/10.0
+				if resid < closestResidual {
+					closestBPM = math.Round(bpm)
+					af.BPM = closestBPM
+					closestResidual = resid
+					log.Debug(closestBPM, closestResidual)
+				}
+			}
+		}
 	}
 	if af.BPM > 0 && quantize {
 		af, err = af.Process()

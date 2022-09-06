@@ -17,7 +17,7 @@ import (
 	"github.com/schollz/seamlessloop/src/seamless"
 )
 
-var flagDebug bool
+var flagDebug, flagGuessBPM bool
 var flagInputFolder, flagOutputFolder string
 var flagInputFile, flagOutputFile string
 var flagCrossfade float64
@@ -28,6 +28,7 @@ var Version string
 
 func init() {
 	flag.BoolVar(&flagNoQuantize, "no-quantize", false, "skip quantization (default if 'bpmX' is in filename)")
+	flag.BoolVar(&flagGuessBPM, "guess", false, "guess bpm if none declared")
 	flag.BoolVar(&flagVersion, "version", false, "show version information")
 	flag.Float64Var(&flagCrossfade, "crossfade", 1.0, "seconds to crossfade if not quantizing")
 	flag.BoolVar(&flagDebug, "debug", false, "debug mode")
@@ -101,7 +102,7 @@ func run() (err error) {
 }
 
 func loopit(fname string) (err error) {
-	fname2, bpm, beats, err := seamless.Do(fname, !flagNoQuantize, flagCrossfade)
+	fname2, bpm, beats, err := seamless.Do(fname, !flagNoQuantize, flagCrossfade, flagGuessBPM)
 	if err != nil {
 		return
 	}
@@ -201,7 +202,7 @@ func runSpecial() (err error) {
 }
 
 func makeLoop(filename string) (err error) {
-	fname2, bpm, _, err := seamless.Do(filename, !flagNoQuantize, flagCrossfade)
+	fname2, bpm, _, err := seamless.Do(filename, !flagNoQuantize, flagCrossfade, flagGuessBPM)
 	if err != nil {
 		return
 	}
