@@ -95,7 +95,6 @@ func run() (err error) {
 	for _, fname := range files {
 		if err = loopit(fname); err != nil {
 			log.Errorf("could not loop %s", fname)
-			return
 		}
 	}
 	return

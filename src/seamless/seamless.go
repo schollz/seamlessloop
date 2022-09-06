@@ -38,7 +38,7 @@ func Do(filename string, quantize bool, crossfade float64, guessBPM bool, bpmFor
 		for i := 1.0; i < 32.0; i += 1.0 {
 			bpmCheck := (i * 2) / af.Duration * 60.0
 			if bpmCheck > 89 && bpmCheck < 180 {
-				resid := math.Abs(math.Round(bpmCheck)-bpmCheck) + float64((int(i)*2)%8)/10.0
+				resid := math.Abs(math.Round(bpmCheck)-bpmCheck) + float64((int(i)*2)%8)/4.0
 				if resid < closestResidual {
 					closestBPM = math.Round(bpmCheck)
 					af.BPM = closestBPM
